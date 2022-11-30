@@ -1,9 +1,11 @@
 <template>
     <div class="header">
+        <!--Direct to homepage-->
         <router-link @click="scrollToTop()" to="/" class="logo"><img src="../assets/images/taco-logo.png" alt="" />BFood
         </router-link>
 
         <nav class="navbar">
+            <!--Direct to pages-->
             <router-link @click="scrollToTop()" to="/">home</router-link>
             <router-link @click="scrollToTop()" to="/about">about</router-link>
             <router-link @click="scrollToTop()" to="/promotions">promotions</router-link>
@@ -12,12 +14,12 @@
         </nav>
 
         <div class="icons">
-            <div id="menu-btn" class="fas fa-bars menu-btn" @click="showNav"></div>
+            <!--Cart icon-->
             <router-link @click="scrollToTop()" to="cart">
                 <div class="fas fa-shopping-cart cart"></div>
             </router-link>
-
-            <div v-if="!user" class="fas fa-user account" @click="showLog">
+            <!--User icon when logout-->
+            <div v-if="!user" class="fas fa-user account">
                 <ul class="drop-down-select">
                     <li>
                         <router-link @click="scrollToTop()" to="/login">login</router-link>
@@ -28,8 +30,8 @@
                 </ul>
 
             </div>
-
-            <div v-else class="fas fa-user account" style="background: #f38609;color: white;" @click="showLog">
+            <!--User icon when login-->
+            <div v-else class="fas fa-user account" style="background: #f38609;color: white;">
                 <ul class="drop-down-select">
                     <li>
                         <router-link @click="scrollToTop()" to="/myorder">my orders</router-link>
@@ -53,38 +55,11 @@ export default {
         ...mapState(["user"])
     },
 
-    mounted() {
-        window.addEventListener('scroll', this.handleScroll);
-    },
-    unmounted() {
-        window.removeEventListener('scroll', this.handleScroll);
-    },
-
     methods: {
         ...mapMutations(["setUser"]),
 
         scrollToTop() {
             window.scrollTo(0, 0);
-        },
-
-        showNav: function () {
-            let navbar = document.querySelector('.header .navbar');
-            navbar.classList.toggle('active');
-        },
-
-        showLog: function () {
-            let mq = window.matchMedia("(max-width: 768px)");
-            if (mq.matches) {
-                let log = document.querySelector('.drop-down-select');
-                log.classList.toggle('active');
-            }
-        },
-
-        handleScroll: function () {
-            let navbar = document.querySelector('.header .navbar');
-            navbar.classList.remove('active');
-            let log = document.querySelector('.drop-down-select');
-            log.classList.remove('active');
         },
 
         handleLogout: function () {

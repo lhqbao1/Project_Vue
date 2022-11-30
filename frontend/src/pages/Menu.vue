@@ -225,7 +225,6 @@ import QuickView from "@/components/QuickView.vue";
 import { mapState } from "vuex";
 export default {
     name: "Menu",
-
     data() {
         return {
             foodObj: { name: "", category: "", status: [], price: "", type: "" },
@@ -244,7 +243,7 @@ export default {
 
     computed: {
         ...mapState(["allFoods"]),
-
+        //show food by filter
         filterFoods: function () {
             return this.allFoods.filter((f) => f.food_name.toLowerCase().match(this.foodObj.name.toLowerCase()) &&
                 (f.food_category.match(this.foodObj.category) || this.foodObj.category == "all" || this.foodObj.category == "") &&
@@ -252,9 +251,11 @@ export default {
                 f.food_type.toLowerCase().match(this.foodObj.type.toLowerCase()) &&
                 (this.evaluateStatus(f, this.foodObj.status)));
         },
+        //item per page
         currentPageItems: function () {
             return this.filterFoods.slice(this.pageNum * this.perPage, this.pageNum * this.perPage + this.perPage);
         },
+        //pagination
         calculatePages: function () {
             if (this.filterFoods.length % this.perPage != 0) {
                 return Math.floor((this.filterFoods.length) / this.perPage) + 1;
@@ -265,6 +266,7 @@ export default {
         }
     },
     methods: {
+        //declare pagination
         set(val) {
             this.pageNum = val;
         },
@@ -274,6 +276,8 @@ export default {
         previous() {
             this.pageNum--;
         },
+
+        //check sale food
         checkSale: function (food, statusArray) {
             if (statusArray.includes("Sale Off")) {
                 if (parseFloat(food.food_discount) > 0) {
@@ -285,6 +289,8 @@ export default {
             }
             return true;
         },
+
+        //check best seller good
         checkBest: function (food, statusArray) {
             if (statusArray.includes("Best Seller")) {
                 if (food.food_status.includes("best seller")) {
@@ -296,6 +302,8 @@ export default {
             }
             return true;
         },
+
+        //check online food
         checkOnl: function (food, statusArray) {
             if (statusArray.includes("Online Only")) {
                 if (food.food_status.includes("online only")) {
@@ -307,6 +315,8 @@ export default {
             }
             return true;
         },
+
+        //check seasonal dishes
         checkSeason: function (food, statusArray) {
             if (statusArray.includes("Seasonal Dishes")) {
                 if (food.food_status.includes("seasonal dishes")) {
@@ -318,6 +328,8 @@ export default {
             }
             return true;
         },
+
+        //check new dishes
         checkNew: function (food, statusArray) {
             if (statusArray.includes("New Dishes")) {
                 if (food.food_status.includes("new dishes")) {
@@ -329,6 +341,8 @@ export default {
             }
             return true;
         },
+
+        //fire filter status
         evaluateStatus: function (food, statusArray) {
             this.pageNum = 0;
             if (statusArray.length != 0) {
@@ -340,6 +354,8 @@ export default {
                 return food;
             }
         },
+
+        //fire filter price
         evaluatePrice: function (food, priceRange) {
             this.pageNum = 0;
             var cal = parseFloat(food.food_price) - parseFloat(food.food_discount);
@@ -372,6 +388,8 @@ export default {
                 return food;
             }
         },
+
+        //fire onchange action
         filterFoodBtn: function (e) {
             this.pageNum = 0;
             if (this.foodObj.category != e.target.value && this.previousCategoryClicked != "") {
@@ -381,6 +399,8 @@ export default {
             this.previousCategoryClicked = e;
             e.target.style.background = "#057835fa";
         },
+
+        //fire onchange action
         filterStatusBtn: function (e) {
             this.pageNum = 0;
             if (this.foodObj.status.includes(e.target.value) == false) {
@@ -390,6 +410,8 @@ export default {
                 document.querySelector(`[for=${e.target.id}]`).querySelector(":scope > button").style.display = "block";
             }
         },
+
+        //fire onchange action
         filterPriceBtn: function (e) {
             this.pageNum = 0;
             this.foodObj.price = "";
@@ -404,6 +426,8 @@ export default {
             }
             this.previousPriceClicked = e;
         },
+
+        //fire onchange action
         filterTypeBtn: function (e) {
             this.pageNum = 0;
             this.foodObj.type = "";
@@ -418,6 +442,8 @@ export default {
             }
             this.previousTypeClicked = e;
         },
+
+        //fire onchange action
         unselectStatusBtn: function (e) {
             this.pageNum = 0;
             this.foodObj.status = this.foodObj.status.filter(function (a) { return a !== e.target.value; });
@@ -425,6 +451,8 @@ export default {
             e.target.parentNode.style.color = "inherit";
             e.target.parentNode.querySelector(":scope > button").style.display = "none";
         },
+
+        //fire onchange action
         unselectPriceBtn: function () {
             this.pageNum = 0;
             this.foodObj.price = "";
@@ -433,6 +461,8 @@ export default {
             document.querySelector(`[for=${this.previousPriceClicked.target.id}]`).querySelector(":scope > button").style.display = "none";
             this.previousPriceClicked = "";
         },
+
+        //fire onchange action
         unselectTypeBtn: function () {
             this.pageNum = 0;
             this.foodObj.type = "";
@@ -441,14 +471,18 @@ export default {
             document.querySelector(`[for=${this.previousTypeClicked.target.id}]`).querySelector(":scope > button").style.display = "none";
             this.previousTypeClicked = "";
         },
+
+        //send id to cart (for rendering in cart component)
         addItem: function (index) {
             this.sendId = parseInt(this.currentPageItems[index].food_id);
             this.showQuickView = !this.showQuickView;
         },
 
+        //close quick view
         closeView: function () {
             this.showQuickView = !this.showQuickView;
         },
+
 
         displayFilterDrop: function () {
             let divControl1 = document.getElementsByClassName("filter-heading");

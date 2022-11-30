@@ -90,6 +90,7 @@
                 <p>Food to customers is always guaranteed of the best quality. Our dishes are made by chef Bao (a 5
                     Michelin stars chef), promising to bring explosive, delicate, impressive flavors. Our delivery
                     service is very professional, customers can enjoy the same quality at the restaurant</p>
+                <!--Use scrollToTop to get on top at /about-->
                 <router-link @click="scrollToTop()" to="/about" class="btn">read more</router-link>
 
                 <div class="icons-container">
