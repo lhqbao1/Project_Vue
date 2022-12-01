@@ -61,6 +61,7 @@ export default {
     methods: {
         matchID: function (food, cartArray) {
             let temp = "";
+            //compare food_id with allFoodsInBill id
             cartArray.forEach(element => {
                 if (parseInt(food.food_id) == element) {
                     temp = food

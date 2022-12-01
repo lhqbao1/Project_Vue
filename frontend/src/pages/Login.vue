@@ -53,12 +53,14 @@ export default {
             window.scrollTo(0, 0);
         },
 
+        //fecth nodejs API to check user
         async getMatchUser(email) {
             let data = await axios.get('/users/' + email);
             this.matchUser = data.data;
         },
 
         async handleSubmit(e) {
+            //validate
             this.errors = [];
 
             if (!this.loginObj.email) {
@@ -80,18 +82,18 @@ export default {
             }
             else {
                 e.preventDefault();
+                //call function check match user
                 await this.getMatchUser(this.loginObj.email);
                 if (!this.matchUser) {
                     this.errors.push("Incorrect email or password!")
                 }
                 else {
                     if (this.matchUser.user_password === this.loginObj.pass) {
+                        //clear user password
                         this.matchUser.user_password = "";
+                        //set user  === current user
                         this.setUser(this.matchUser);
                         this.$router.push("/");
-                    }
-                    else {
-                        this.errors.push("Incorrect email or password!")
                     }
                 }
             }

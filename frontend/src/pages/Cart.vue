@@ -13,13 +13,14 @@
                         <div class="box">
                             <div class="box-title item-total row">
                                 <h3>
+                                    <!--Case when user have food in cart-->
                                     <p style="font-size: 15px;">{{ filterFoods.length.toString() }}
                                         <span v-if="filterFoods.length < 2">item</span>
                                         <span v-else>items</span>
                                     </p>in your cart
                                 </h3>
                             </div>
-
+                            <!--Case when user do not have food in cart-->
                             <div v-if="!filterFoods.length">
                                 <div class="box-content row no-food">
                                     <div class="content">
@@ -32,6 +33,7 @@
                                 </div>
                             </div>
                             <div v-else>
+                                <!--Loop in filterFoods-->
                                 <div v-for="(f, index) in filterFoods" :key="index">
                                     <div class="box-content row">
                                         <div class="image-box col-sm-3" style="padding-left: 0;">
@@ -119,9 +121,6 @@
                                     <button class="btn check-out-btn" :disabled="filterFoods.length ? false : true"
                                         @click="checkOutBtn()"><i class="fa fa-shopping-cart"></i>
                                         Checkout</button>
-                                    <button class="btn cancel-btn" @click="cancelBtn()"
-                                        :disabled="filterFoods.length ? false : true">
-                                        Cancel</button>
                                 </div>
                             </div>
                         </div>
@@ -163,17 +162,17 @@ export default {
 
     computed: {
         ...mapState(["allFoods", "user"]),
-
         filterFoods: function () {
+            //call function matchID to get food
             return this.allFoods.filter(
                 (f) => this.matchID(f, this.cartItem)
             );
         },
     },
-
     methods: {
         matchID: function (food, cartArray) {
             let temp = "";
+            //function to compare food_id with cartItem id
             cartArray.forEach(element => {
                 if (parseInt(food.food_id) == element) {
                     temp = food
@@ -196,6 +195,7 @@ export default {
                 discount = discount + parseInt(this.filterFoods[i].food_discount) * this.itemQuantity[i]
                 i = i + 1
             }
+            //case: no item in cart
             if (!this.filterFoods.length) {
                 delivery = 0
             }
@@ -204,13 +204,14 @@ export default {
         },
 
         async onQtyChange(e, i) {
+            //do not allow user to change quantity to zero (0)
             if (e.target.value < 1) {
                 e.target.value = 1
                 this.itemQuantity[i] = 1
             } else {
                 this.itemQuantity[i] = e.target.value;
             }
-
+            //update itemQuantity into db
             let data = {
                 user_id: parseInt(this.user.user_id),
                 food_id: parseInt(this.cartItem[i]),
@@ -219,27 +220,20 @@ export default {
             await axios.put("/cartItem/", data)
         },
 
-        async cancelBtn() {
-            await axios.delete("/cartItem/" + this.user.user_id);
-
-            this.cartItem = [];
-            this.itemQuantity = [];
-        },
-
         checkOutBtn: function () {
             this.$router.push("/checkout");
         },
 
-        async removeBtn(index) {
-            await axios.delete("/cartItem/" + this.user.user_id + "/" + this.cartItem[index]);
-
-            this.cartItem.splice(index, 1);
-            this.itemQuantity.splice(index, 1);
+        async removeBtn() {
+            await axios.delete("/cartItem/" + this.user.user_id);
+            this.cartItem = [];
+            this.itemQuantity = [];
         },
 
         async getAllCartItem() {
             if (this.user) {
                 let existItem = await axios.get('/cartItem/' + this.user.user_id);
+                //setState for cartItem and itemQuantity
                 existItem.data.forEach(element => {
                     this.cartItem.push(element.food_id);
                     this.itemQuantity.push(element.item_qty);

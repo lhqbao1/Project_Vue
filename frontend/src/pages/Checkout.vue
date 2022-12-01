@@ -16,8 +16,8 @@
                     </div>
 
                     <div class="form-group">
-                        <input type="text" name="coAddress" id="coAddress" placeholder="Address in Hanoi, Vietnam"
-                            class="form-control" v-model="checkoutObj.address" />
+                        <input type="text" name="coAddress" id="coAddress" placeholder="Address" class="form-control"
+                            v-model="checkoutObj.address" />
                         <p class="error-mess" v-if="errorObj.addressErr.length > 0">{{ errorObj.addressErr[0] }}</p>
                     </div>
                 </div>
@@ -32,41 +32,6 @@
                                 v-model="checkoutObj.paymentMethod" /><span>Card (Visa)</span>
                         </div>
                         <p class="error-mess" v-if="errorObj.payErr.length > 0">{{ errorObj.payErr[0] }}</p>
-                    </div>
-
-
-                    <div v-if="checkoutObj.paymentMethod == 'card'">
-                        <div class="form-group">
-                            <input type="text" name="coCardNum" placeholder="Enter your card number" id="coCardNum"
-                                class="form-control" v-model="cardObj.number" size="16" maxlength="16" />
-                            <p class="error-mess" v-if="errorObj.numErr.length > 0">{{ errorObj.numErr[0] }}</p>
-                        </div>
-
-                        <div class="form-group">
-                            <input v-upcase type="text" name="coCardName" placeholder="Enter the name in your card "
-                                id="coCardName" class="form-control" v-model="cardObj.name" />
-                            <p class="error-mess" v-if="errorObj.nameErr.length > 0">{{ errorObj.nameErr[0] }}</p>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="form-control">
-                                <span
-                                    style="font-size: 1.6rem; position: absolute; margin-left: -5px; margin-top: -11px;">Expiry
-                                    Date:
-                                </span>
-                                <input
-                                    style="position: absolute; margin-left: 100px; margin-top: -12px; background: inherit;"
-                                    type="month" name="coCardEx" id="coCardEx" v-model="cardObj.expiryDate"
-                                    @click="availableTime()" />
-                            </div>
-                            <p class="error-mess" v-if="errorObj.exDateErr.length > 0">{{ errorObj.exDateErr[0] }}</p>
-                        </div>
-
-                        <div class="form-group">
-                            <input type="text" name="coCardCvv" placeholder="CVV" id="coCardCvv" class="form-control"
-                                v-model="cardObj.cvv" />
-                            <p class="error-mess" v-if="errorObj.cvvErr.length > 0">{{ errorObj.cvvErr[0] }}</p>
-                        </div>
                     </div>
                 </div>
 
@@ -103,6 +68,7 @@ export default {
         ...mapState(["allFoods", "user"]),
 
         filterFoods: function () {
+            //call function matchID to get food
             return this.allFoods.filter(
                 (f) => this.matchID(f, this.cartItem)
             );
@@ -110,19 +76,9 @@ export default {
     },
 
     methods: {
-        availableTime: function () {
-            var now = new Date();
-            var currentMonth = ("0" + (now.getMonth() + 1)).slice(-2);
-
-            var minRange = now.getFullYear() + "-" + currentMonth;
-            var maxRange = (now.getFullYear() + 10) + "-" + currentMonth;
-
-            document.getElementById("coCardEx").setAttribute("min", minRange);
-            document.getElementById("coCardEx").setAttribute("max", maxRange);
-        },
-
         matchID: function (food, cartArray) {
             let temp = "";
+            //function to compare food_id with cartItem id
             cartArray.forEach(element => {
                 if (parseInt(food.food_id) == element) {
                     temp = food
@@ -152,6 +108,7 @@ export default {
             if (this.user) {
                 let existItem = await axios.get('/cartItem/' + this.user.user_id);
                 existItem.data.forEach(element => {
+                    //setState for cartItem and itemQuantity
                     this.cartItem.push(element.food_id);
                     this.itemQuantity.push(element.item_qty);
                 });
@@ -168,19 +125,9 @@ export default {
             this.errorObj.cvvErr = [];
         },
 
-        checkEmptyErr: function () {
-            for (var typeErr in this.errorObj) {
-                if (this.errorObj[typeErr].length != 0) {
-                    return false;
-                }
-            }
-            return true;
-        },
 
-        inputUpcase: function (e) {
-            e.target.value = e.target.value.toUpperCase()
-        },
 
+        //validate input
         checkForm: function () {
             this.resetCheckErr();
 
@@ -203,63 +150,9 @@ export default {
             if (!this.checkoutObj.paymentMethod) {
                 this.errorObj.payErr.push('Selecting payment method is required');
             }
-            else if (this.checkoutObj.paymentMethod == "card") {
-                if (!this.cardObj.number) {
-                    this.errorObj.numErr.push('Entering card number is required');
-                }
-                else {
-                    if (!this.cardObj.number.startsWith('4')) {
-                        this.errorObj.numErr.push('Visa card numbers must start with 4');
-                    }
-
-                    if (this.cardObj.number.length != 16) {
-                        this.errorObj.numErr.push('Visa card numbers must have exactly 16 digits');
-                    }
-
-                    if (!/[0-9]{16}/.test(this.cardObj.number)) {
-                        this.errorObj.numErr.push('Visa card numbers can only contain numbers');
-                    }
-                }
-
-                if (!this.cardObj.name) {
-                    this.errorObj.nameErr.push('Entering name is required');
-                }
-                else {
-                    if (!/^[A-Za-z]+$/.test(this.cardObj.name.replace(/\s/g, ""))) {
-                        this.errorObj.nameErr.push('A name can only contain letters');
-                    }
-                }
-
-                if (!this.cardObj.expiryDate) {
-                    this.errorObj.exDateErr.push('Entering expiry date is required');
-                }
-
-
-                if (!this.cardObj.cvv) {
-                    this.errorObj.cvvErr.push('Entering cvv code is required');
-                }
-                else {
-                    if (this.cardObj.cvv.length != 3) {
-                        this.errorObj.cvvErr.push('Cvv code must have exactly 3 digits');
-                    }
-
-                    if (!/[0-9]{3}/.test(this.cardObj.cvv)) {
-                        this.errorObj.cvvErr.push('Cvv code can only contain numbers');
-                    }
-                }
-            } else if (this.checkoutObj.paymentMethod == "cash") {
-                this.cardObj.number = "";
-                this.cardObj.name = "";
-                this.cardObj.expiryDate = "";
-                this.cardObj.cvv = "";
-
-                this.errorObj.numErr = [];
-                this.errorObj.nameErr = [];
-                this.errorObj.exDateErr = [];
-                this.errorObj.cvvErr = [];
-            }
         },
 
+        //isPaid === true when paymentMethod === card
         isPaid: function () {
             if (this.checkoutObj.paymentMethod == "cash") {
                 return "false"
@@ -279,9 +172,17 @@ export default {
             await axios.post("/billdetails", billDetails);
         },
 
+        checkEmptyErr: function () {
+            for (var typeErr in this.errorObj) {
+                if (this.errorObj[typeErr].length != 0) {
+                    return false;
+                }
+            }
+            return true;
+        },
+
         async handleSubmit(e) {
             this.checkForm();
-
             if (!this.checkEmptyErr()) {
                 e.preventDefault();
             } else {
@@ -331,15 +232,6 @@ export default {
         }
     }
 };
-</script>
-
-<script setup>
-// enables v-focus in templates
-const vUpcase = {
-    mounted(el) {
-        el.style.textTransform = "uppercase";
-    }
-}
 </script>
 
 <style scoped>

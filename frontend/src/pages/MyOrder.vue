@@ -7,7 +7,7 @@
                         <span>Order No - </span>
                         <span>{{ b.bill_id }}</span>
                     </div>
-                    <button @click="sendBillId(b.bill_id)">show order details</button>
+                    <button @click="sendBillId(b.bill_id)">Show details</button>
                 </div>
 
                 <div class="d-flex flex-wrap flex-sm-nowrap justify-content-between card-summary">
@@ -24,41 +24,6 @@
                     <div class="w-100 text-center py-1 px-2"><span>Address:</span>{{ " " + b.bill_address }}
                     </div>
                     <div class="w-100 text-center py-1 px-2"><span>Phone:</span>{{ " " + b.bill_phone }}
-                    </div>
-                </div>
-
-                <div class="card-body">
-                    <div class="steps d-flex flex-wrap flex-sm-nowrap justify-content-between">
-                        <div class="step" :class="b.bill_status >= 1 ? 'completed' : ''">
-                            <div class="step-icon-wrap">
-                                <div class="step-icon"><i class="fa-solid fa-utensils"></i></div>
-                            </div>
-                            <h4 class="step-title">Confirmed</h4>
-                        </div>
-                        <div class="step" :class="b.bill_status >= 2 ? 'completed' : ''">
-                            <div class="step-icon-wrap">
-                                <div class="step-icon"><i class="fa-solid fa-fire-burner"></i></div>
-                            </div>
-                            <h4 class="step-title">Preparing</h4>
-                        </div>
-                        <div class="step" :class="b.bill_status >= 3 ? 'completed' : ''">
-                            <div class="step-icon-wrap">
-                                <div class="step-icon"><i class="fa-solid fa-list-check"></i></div>
-                            </div>
-                            <h4 class="step-title">Checking</h4>
-                        </div>
-                        <div class="step" :class="b.bill_status >= 4 ? 'completed' : ''">
-                            <div class="step-icon-wrap">
-                                <div class="step-icon"><i class="fa-solid fa-route"></i></div>
-                            </div>
-                            <h4 class="step-title">Delivering</h4>
-                        </div>
-                        <div class="step" :class="b.bill_status >= 5 ? 'completed' : ''">
-                            <div class="step-icon-wrap">
-                                <div class="step-icon"><i class="fa-solid fa-house"></i></div>
-                            </div>
-                            <h4 class="step-title">Delivered</h4>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -129,15 +94,18 @@ export default {
             }
         },
 
+        //send id to showOrderDetails and setState to true
         sendBillId: function (id) {
             this.sendId = id
             this.showOrderDetails = !this.showOrderDetails;
         },
 
+        // setState to false
         closeView: function () {
             this.showOrderDetails = !this.showOrderDetails;
         },
 
+        //using like hot reload
         autoUpdate: function () {
             this.interval = setInterval(function () {
                 this.getAllBills();

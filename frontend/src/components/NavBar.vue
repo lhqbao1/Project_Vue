@@ -54,7 +54,6 @@ export default {
     computed: {
         ...mapState(["user"])
     },
-
     methods: {
         ...mapMutations(["setUser"]),
 
@@ -62,6 +61,7 @@ export default {
             window.scrollTo(0, 0);
         },
 
+        //set user  === ""
         handleLogout: function () {
             this.setUser("");
         }
